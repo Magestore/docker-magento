@@ -73,7 +73,7 @@ PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
 # Check magento installation
-COUNT_LIMIT=120 # timeout 600 seconds
+COUNT_LIMIT=240 # timeout 600 seconds
 while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
 do
     if [ $COUNT_LIMIT -lt 1 ]; then

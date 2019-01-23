@@ -121,6 +121,8 @@ if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
                 COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
                 COUNT_OUT_LIMIT=100
                 RETRY_LIMIT=$(( RETRY_LIMIT - 1 ))
+            else
+                break
             fi
             if [ $RETRY_LIMIT -lt 1 ]; then
                 echo "Error with db logs:"

@@ -52,6 +52,23 @@ cp -Rf client/pos/build server/app/code/Magestore/Webpos/build/apps/pos
 cp ../$COMPOSE_FILE docker-compose.yml
 COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
 
+# check db container is run correctly
+WHILE_LIMIT=10 # timeout 360 seconds
+while ! DBISUP=`docker-compose ps | grep 3306 | grep Up`
+do
+    if [ ! -z "$DBISUP" ]; then
+        break
+    else
+        docker-compose rm db # remove stopped container
+        COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
+        if [ $WHILE_LIMIT -lt 1 ]; then
+            break
+        fi
+    fi
+    WHILE_LIMIT=$(( WHILE_LIMIT - 1 ))
+    sleep 3
+done
+
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
@@ -66,13 +83,41 @@ do
     sleep 5
 done
 
+# if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
+#     docker-compose restart magento
+#     PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
+#     MAGENTO_URL="http://$NODE_IP:$PORT"
+#     while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+#     do
+#         sleep 5
+#     done
+# fi
+
+# recheck and wait for db is up
 if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
-    docker-compose restart magento
+    COMPOSE_HTTP_TIMEOUT=200 docker-compose restart magento
     PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
     MAGENTO_URL="http://$NODE_IP:$PORT"
-    while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+    RETRY_LIMIT=1 # retry 1 loop
+    COUNT_OUT_LIMIT=100 # timeout 300 seconds
+    while ! docker-compose exec -T magento curl -s https://localhost.com/magento_version
     do
-        sleep 5
+        COUNT_OUT_LIMIT=$(( COUNT_OUT_LIMIT - 1 ))
+        if [ $COUNT_OUT_LIMIT -lt 1 ]; then
+            # if database cannot start or error try to restart it
+            if [ -z "$(docker-compose ps | grep 3306 | grep Up)" ]; then
+                docker-compose rm db # remove stopped container
+                COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
+                COUNT_OUT_LIMIT=100
+                RETRY_LIMIT=$(( RETRY_LIMIT - 1 ))
+            fi
+            if [ $RETRY_LIMIT -lt 1 ]; then
+                echo "Error with db logs:"
+                docker-compose logs db
+                exit 1
+            fi
+        fi
+        sleep 3
     done
 fi
 

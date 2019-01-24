@@ -6,6 +6,7 @@ services:
       - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
     ports:
       - 8080-8089:80
+      - 8180-8189:443
     networks:
       webnet:
         aliases:
@@ -15,6 +16,8 @@ services:
     image: magestore/mftf-db:percona-5.7
     environment:
       MYSQL_ROOT_PASSWORD: magento
+    volumes:
+      - ./../db/conf.d:/etc/my.cnf.d
     networks:
       - webnet
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-
+echo "This step running on node $NODE_NAME"
 set +x
 
 if [[ ! -z "${JENKINS_DATA}" ]]; then

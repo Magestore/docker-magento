@@ -1,4 +1,4 @@
-version: '3'
+version: '2.1'
 services:
   magento:
     image: magestore/mftf:2.3.0-nginx-php7.2.13
@@ -11,6 +11,8 @@ services:
       webnet:
         aliases:
           - localhost.com
+    mem_limit: 3GB
+    memswap_limit: 0
 
   db:
     image: magestore/mftf-db:percona-5.7-lessdata
@@ -20,6 +22,8 @@ services:
       - ./../db/conf.d:/etc/my.cnf.d
     networks:
       - webnet
+    mem_limit: 3GB
+    memswap_limit: 0
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

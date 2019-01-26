@@ -13,7 +13,7 @@ services:
           - localhost.com
 
   db:
-    image: magestore/mftf-db:percona-5.7
+    image: magestore/mftf-db:percona-5.7-lessdata
     environment:
       MYSQL_ROOT_PASSWORD: magento
     volumes:

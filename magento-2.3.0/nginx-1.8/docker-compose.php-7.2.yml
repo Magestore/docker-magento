@@ -11,6 +11,9 @@ services:
       webnet:
         aliases:
           - localhost.com
+    environment:
+      BASE_URL: /
+      MAGENTO_DEV_MODE: developer
     mem_limit: 3GB
     memswap_limit: 0
 

@@ -35,7 +35,7 @@ else
     git fetch --depth 1 origin +refs/$GITHUB_BRANCH/merge
 fi
 git checkout FETCH_HEAD
-
+rm -rf .git
 if [ $? -ne 0 ]; then
     exit 1
 fi
@@ -69,21 +69,35 @@ do
     sleep 3
 done
 
-PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
-MAGENTO_URL="http://$NODE_IP:$PORT"
-
 # Check magento installation
-COUNT_LIMIT=240 # timeout 600 seconds
-while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+# COUNT_LIMIT=240 # timeout 600 seconds
+# while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+# do
+#     if [ $COUNT_LIMIT -lt 1 ]; then
+#         break
+#     fi
+#     COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
+#     sleep 5
+# done
+
+# Wait for magento setup start
+#var/.maintenance.flag
+TIME_OUT=10 # seconds
+while [ -z "`docker-compose exec -T magento ps auxww | grep 'bin/magento setup'`" ]
 do
-    if [ $COUNT_LIMIT -lt 1 ]; then
-        break
+    if [ $TIME_OUT -lt 1 ]; then
+        echo "Something error:=========="
+        docker-compose ps
+        echo "See logs:================="
+        docker-compose logs
+        exit 1
+        #reak
     fi
-    COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
-    sleep 5
+    TIME_OUT=$(( TIME_OUT - 1 ))
+    sleep 1
 done
 
-# Wait for complately magento installation
+# Wait for magento setup stop
 COUNT_LIMIT=1000 # timeout 3000 seconds
 while [ ! -z "`docker-compose exec -T magento ps auxww | grep 'bin/magento setup'`" ]
 do
@@ -94,45 +108,82 @@ do
     sleep 3
 done
 
+#check maintenance flag
+! `docker-compose exec -T magento [ -f var/.maintenance.flag ]` || bash -c "\
+    echo 'Magento is maintenance mode try to restart container'; \
+    COMPOSE_HTTP_TIMEOUT=200 docker-compose restart magento "
+
+# Wait for magento setup start
+TIME_OUT=10 # seconds
+while [ -z "`docker-compose exec -T magento ps auxww | grep 'bin/magento setup'`" ]
+do
+    if [ $TIME_OUT -lt 1 ]; then
+        break
+    fi
+    TIME_OUT=$(( TIME_OUT - 1 ))
+    sleep 1
+done
+
+# Wait for magento setup stop
+COUNT_LIMIT=1000 # seconds
+while [ ! -z "`docker-compose exec -T magento ps auxww | grep 'bin/magento setup'`" ]
+do
+    if [ $COUNT_LIMIT -lt 1 ]; then
+        break
+    fi
+    COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
+    sleep 3
+done
+
+sleep 3
+# Check magento installation
+COUNT_LIMIT=2 # timeout 600 seconds
+while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+do
+    if [ $COUNT_LIMIT -lt 1 ]; then
+        break
+    fi
+    COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
+    sleep 3
+done
+
+if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
+    echo "Cannot setup magento"
+    exit 1
+fi
+
+# recheck and wait for db is up
 # if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
-#     docker-compose restart magento
+#     COMPOSE_HTTP_TIMEOUT=200 docker-compose restart magento
 #     PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 #     MAGENTO_URL="http://$NODE_IP:$PORT"
-#     while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+#     RETRY_LIMIT=1 # retry 1 loop
+#     COUNT_OUT_LIMIT=100 # timeout 300 seconds
+#     while ! docker-compose exec -T magento curl -s https://localhost.com/magento_version
 #     do
-#         sleep 5
+#         COUNT_OUT_LIMIT=$(( COUNT_OUT_LIMIT - 1 ))
+#         if [ $COUNT_OUT_LIMIT -lt 1 ]; then
+#             # if database cannot start or error try to restart it
+#             if [ -z "$(docker-compose ps | grep 3306 | grep Up)" ]; then
+#                 docker-compose rm db # remove stopped container
+#                 COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
+#                 COUNT_OUT_LIMIT=100
+#                 RETRY_LIMIT=$(( RETRY_LIMIT - 1 ))
+#             else
+#                 break
+#             fi
+#             if [ $RETRY_LIMIT -lt 1 ]; then
+#                 echo "Error with db logs:"
+#                 docker-compose logs db
+#                 exit 1
+#             fi
+#         fi
+#         sleep 3
 #     done
 # fi
 
-# recheck and wait for db is up
-if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
-    COMPOSE_HTTP_TIMEOUT=200 docker-compose restart magento
-    PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
-    MAGENTO_URL="http://$NODE_IP:$PORT"
-    RETRY_LIMIT=1 # retry 1 loop
-    COUNT_OUT_LIMIT=100 # timeout 300 seconds
-    while ! docker-compose exec -T magento curl -s https://localhost.com/magento_version
-    do
-        COUNT_OUT_LIMIT=$(( COUNT_OUT_LIMIT - 1 ))
-        if [ $COUNT_OUT_LIMIT -lt 1 ]; then
-            # if database cannot start or error try to restart it
-            if [ -z "$(docker-compose ps | grep 3306 | grep Up)" ]; then
-                docker-compose rm db # remove stopped container
-                COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
-                COUNT_OUT_LIMIT=100
-                RETRY_LIMIT=$(( RETRY_LIMIT - 1 ))
-            else
-                break
-            fi
-            if [ $RETRY_LIMIT -lt 1 ]; then
-                echo "Error with db logs:"
-                docker-compose logs db
-                exit 1
-            fi
-        fi
-        sleep 3
-    done
-fi
+PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
+MAGENTO_URL="http://$NODE_IP:$PORT"
 
 # Correct magento url
 docker-compose exec -u www-data -T magento bash -c \

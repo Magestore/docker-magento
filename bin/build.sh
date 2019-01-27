@@ -160,7 +160,7 @@ docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 
 sleep 3
 echo "Check magento installation"
-COUNT_LIMIT=2 # timeout 600 seconds
+COUNT_LIMIT=10 # timeout 600 seconds
 while ! RESPONSE=`docker-compose exec -T magento curl -s localhost.com/magento_version`
 do
     if [ $COUNT_LIMIT -lt 1 ]; then
@@ -172,6 +172,7 @@ done
 
 if [[ "${RESPONSE:0:8}" != "Magento/" ]]; then
     echo "Cannot setup magento"
+    sleep 1000
     exit 1
 fi
 

@@ -13,7 +13,7 @@ services:
         aliases:
           - localhost.com
     environment:
-      BASE_URL: /
+      #BASE_URL: 
       MAGENTO_DEV_MODE: developer
     mem_limit: 3GB
     memswap_limit: 0

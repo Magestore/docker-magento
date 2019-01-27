@@ -147,7 +147,11 @@ do
     sleep 3
 done
 
-if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
+
+echo "Debug"
+sleep 2000
+
+if [[ "${RESPONSE:0:8}" != "Magento/" ]]; then
     echo "Cannot setup magento"
     exit 1
 fi

@@ -220,9 +220,12 @@ docker-compose exec -u www-data -T magento bash -c \
 echo "Install POS modules:"
 sed -i 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
 docker-compose up -d
-sleep 1
-MAGENTO_CMD='php bin/magento setup:upgrade && php bin/magento webpos:deploy'
-docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
+
+# Wait for server
+sleep 5
+
+docker-compose exec -u www-data -T magento bash -c "php bin/magento setup:upgrade"
+docker-compose exec -u www-data -T magento bash -c "php bin/magento webpos:deploy"
 
 # Update config for testing
 MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled \

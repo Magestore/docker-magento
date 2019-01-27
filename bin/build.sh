@@ -161,7 +161,7 @@ docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 sleep 3
 echo "Check magento installation"
 COUNT_LIMIT=2 # timeout 600 seconds
-while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
+while ! RESPONSE=`docker-compose exec -T magento curl -s localhost.com/magento_version`
 do
     if [ $COUNT_LIMIT -lt 1 ]; then
         break
@@ -169,10 +169,6 @@ do
     COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
     sleep 3
 done
-
-
-echo "Debug"
-sleep 300
 
 if [[ "${RESPONSE:0:8}" != "Magento/" ]]; then
     echo "Cannot setup magento"
@@ -212,8 +208,17 @@ fi
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
+# Correct magento url
+docker-compose exec -u www-data -T magento bash -c \
+    "php bin/magento setup:store-config:set \
+    --admin-use-security-key=0 \
+    --base-url=$MAGENTO_URL/ "
+
 # Upgrade module (if needed)
-MAGENTO_CMD='php bin/magento setup:upgrade '
+# install POS
+echo "Install POS modules:"
+docker-compose run -T -v "$PWD/server/app/code/Magestore:/var/www/html/app/code/Magestore" magento
+MAGENTO_CMD='php bin/magento setup:upgrade && php bin/magento webpos:deploy'
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 
 # Update config for testing
@@ -222,8 +227,3 @@ MAGENTO_CMD+='&& php bin/magento config:set admin/security/admin_account_sharing
 MAGENTO_CMD+='&& php bin/magento config:set admin/captcha/enable 0 '
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 
-# Correct magento url
-docker-compose exec -u www-data -T magento bash -c \
-    "php bin/magento setup:store-config:set \
-    --admin-use-security-key=0 \
-    --base-url=$MAGENTO_URL/ "

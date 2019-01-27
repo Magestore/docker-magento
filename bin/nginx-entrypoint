@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Start php-fpm
+php-fpm -y /usr/local/etc/php-fpm.conf -D
+# Start nginx
+nginx -g "daemon off;"

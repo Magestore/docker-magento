@@ -75,20 +75,20 @@ COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php
 # Install magento
 echo "Install magento"
 set +x
-MAGENTO_CMD='php bin/magento setup:install --use-rewrites=1 '
-MAGENTO_CMD+='--db-host=db '
-MAGENTO_CMD+='--db-name=magento '
-MAGENTO_CMD+='--db-password=magento '
-MAGENTO_CMD+='--db-prefix=m_ '
-MAGENTO_CMD+="--admin-firstname=Admin "
-MAGENTO_CMD+="--admin-lastname=MFTF "
-MAGENTO_CMD+="--admin-email=admin@localhost.com "
-MAGENTO_CMD+="--admin-user=admin "
-MAGENTO_CMD+="--admin-password=admin123 "
-MAGENTO_CMD+="--base-url=\$BASE_URL "
-MAGENTO_CMD+="--backend-frontname=admin "
-MAGENTO_CMD+="--admin-use-security-key=0 "
-MAGENTO_CMD+="--key=8f1e9249ca82c072122ae8d08bc0b0cf "
+MAGENTO_CMD='php bin/magento setup:install --use-rewrites=1 \
+--db-host=db \
+--db-name=magento \
+--db-password=magento \
+--db-prefix=m_ \
+--admin-firstname=Admin \
+--admin-lastname=MFTF \
+--admin-email=admin@localhost.com \
+--admin-user=admin \
+--admin-password=admin123 \
+--base-url=$BASE_URL \
+--backend-frontname=admin \
+--admin-use-security-key=0 \
+--key=8f1e9249ca82c072122ae8d08bc0b0cf '
 set +x
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 

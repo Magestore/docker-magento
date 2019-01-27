@@ -73,6 +73,8 @@ echo "Wait for mysql work"
 COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php
 
 # Install magento
+echo "Install magento"
+set +x
 MAGENTO_CMD='php bin/magento setup:install --use-rewrites=1 '
 MAGENTO_CMD+='--db-host=db '
 MAGENTO_CMD+='--db-name=magento '
@@ -87,8 +89,7 @@ MAGENTO_CMD+="--base-url=\$BASE_URL "
 MAGENTO_CMD+="--backend-frontname=admin "
 MAGENTO_CMD+="--admin-use-security-key=0 "
 MAGENTO_CMD+="--key=8f1e9249ca82c072122ae8d08bc0b0cf "
-
-echo "Install magento"
+set +x
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 
 # Check magento installation

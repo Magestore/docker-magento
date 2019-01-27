@@ -218,15 +218,15 @@ docker-compose exec -u www-data -T magento bash -c \
 # Upgrade module (if needed)
 # install POS
 echo "Install POS modules:"
-sed -i -s 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
+sed -i 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
 docker-compose up -d
 sleep 1
 MAGENTO_CMD='php bin/magento setup:upgrade && php bin/magento webpos:deploy'
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 
 # Update config for testing
-MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled '
-MAGENTO_CMD+='&& php bin/magento config:set admin/security/admin_account_sharing 1 '
-MAGENTO_CMD+='&& php bin/magento config:set admin/captcha/enable 0 '
+MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled \
+&& php bin/magento config:set admin/security/admin_account_sharing 1 \
+&& php bin/magento config:set admin/captcha/enable 0 '
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 

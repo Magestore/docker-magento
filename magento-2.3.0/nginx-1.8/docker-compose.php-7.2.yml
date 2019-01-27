@@ -3,7 +3,7 @@ services:
   magento:
     image: magestore/mftf:2.3.0-nginx-php7.2.13
     volumes:
-      - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
+      #- ./server/app/code/Magestore:/var/www/html/app/code/Magestore
       - ../bin/nginx-entrypoint:/usr/local/bin/nginx-entrypoint
     ports:
       - 8080-8089:80

@@ -89,7 +89,7 @@ MAGENTO_CMD='php bin/magento setup:install --use-rewrites=1 \
 --backend-frontname=admin \
 --admin-use-security-key=0 \
 --key=8f1e9249ca82c072122ae8d08bc0b0cf '
-set +x
+set -x
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 
 # Check magento installation
@@ -132,7 +132,7 @@ docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 # done
 
 #check maintenance flag
-! `docker-compose exec -T magento [ -f var/.maintenance.flag ]` || bash -c "\
+! `docker-compose exec -T magento [ -f var/.maintenance.flag ]` || sh -c "\
     echo 'Magento is maintenance mode try to restart container'; \
     COMPOSE_HTTP_TIMEOUT=200 docker-compose restart magento "
 

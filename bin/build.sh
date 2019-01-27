@@ -218,7 +218,9 @@ docker-compose exec -u www-data -T magento bash -c \
 # Upgrade module (if needed)
 # install POS
 echo "Install POS modules:"
-docker-compose run -T -v "$PWD/server/app/code/Magestore:/var/www/html/app/code/Magestore" magento
+sed -i -s 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
+docker-compose up -d
+sleep 1
 MAGENTO_CMD='php bin/magento setup:upgrade && php bin/magento webpos:deploy'
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 

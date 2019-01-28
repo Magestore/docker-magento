@@ -15,6 +15,7 @@ if [[ -z "$PORT" ]]; then
 fi
 
 MAGENTO_URL="http://$NODE_IP:$PORT"
+MAGENTO_SECURE_URL="http://$NODE_IP:$PORT"
 
 PORT=`docker-compose port --protocol=tcp phpmyadmin 80 | sed 's/0.0.0.0://'`
 PHPMYADMIN_URL="http://$NODE_IP:$PORT"
@@ -28,10 +29,29 @@ echo "Server Info: $HTTP_SERVER php-$PHP_VERSION Magento-$MAGENTO_VERSION"
 echo "Built from: $GITHUB_REPO $GITHUB_BRANCH"
 echo ""
 echo "Magento: $MAGENTO_URL/admin"
+echo "         $MAGENTO_SECURE_URL/admin"
+echo "POS:     $MAGENTO_URL/pub/apps/pos/"
+echo "         $MAGENTO_SECURE_URL/pub/apps/pos/"
 echo "Admin: admin/admin123"
 echo "PHPMyAdmin: $PHPMYADMIN_URL"
-echo "EMAIL: $EMAIL_URL"
+echo "MAIL BOX: $EMAIL_URL"
 echo ""
+
+# Slack hook
+INFO="\n"
+INFO="${INFO}Server Info: $HTTP_SERVER php-$PHP_VERSION Magento-$MAGENTO_VERSION \n"
+INFO="${INFO}Built from: $GITHUB_REPO $GITHUB_BRANCH \n"
+INFO="${INFO}\n"
+INFO="${INFO}Magento: $MAGENTO_URL/admin \n"
+INFO="${INFO}         $MAGENTO_SECURE_URL/admin \n"
+INFO="${INFO}POS:     $MAGENTO_URL/pub/apps/pos/ \n"
+INFO="${INFO}         $MAGENTO_SECURE_URL/pub/apps/pos/ \n"
+INFO="${INFO}Admin: admin/admin123 \n"
+INFO="${INFO}PHPMyAdmin: $PHPMYADMIN_URL \n"
+INFO="${INFO}MAIL BOX: $EMAIL_URL \n"
+INFO="${INFO}"
+
+curl -X POST -s --data-urlencode "payload={\"text\": \"[RUNNING] <$RUN_DISPLAY_URL|$BUILD_DISPLAY_NAME> $INFO \"}" $SLACK_HOOKS_POS4
 
 # Living time
 set -x

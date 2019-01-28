@@ -219,17 +219,28 @@ docker-compose exec -u www-data -T magento bash -c \
 # install POS
 echo "Install POS modules:"
 sed -i 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
-docker-compose up -d
+docker-compose up -d magento
 
 # Wait for server
 sleep 5
+COUNT_LIMIT=10 # timeout 600 seconds
+while ! RESPONSE=`docker-compose exec -T magento curl -s localhost/magento_version`
+do
+    if [ $COUNT_LIMIT -lt 1 ]; then
+        echo "Server magento doesn't work"
+        sleep 1000 # debuging
+        exit 1
+    fi
+    COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
+    sleep 3
+done
 
 docker-compose exec -u www-data -T magento bash -c "php bin/magento setup:upgrade"
 docker-compose exec -u www-data -T magento bash -c "php bin/magento webpos:deploy"
 
 # Update config for testing
-MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled \
-&& php bin/magento config:set admin/security/admin_account_sharing 1 \
-&& php bin/magento config:set admin/captcha/enable 0 '
+MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled ; \
+php bin/magento config:set admin/security/admin_account_sharing 1 ; \
+php bin/magento config:set admin/captcha/enable 0 '
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
 

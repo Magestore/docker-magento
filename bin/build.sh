@@ -218,6 +218,8 @@ COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
+sleep 10000
+
 # Correct magento url
 docker-compose exec -u www-data -T magento bash -c \
     "php bin/magento setup:store-config:set \

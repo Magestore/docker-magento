@@ -234,6 +234,10 @@ do
     COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
     sleep 3
 done
+
+
+sleep 100000
+
 echo "Wait for mysql work"
 COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php
 

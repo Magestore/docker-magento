@@ -1,9 +1,10 @@
-version: '3'
+version: '2.1'
 services:
   magento:
     image: magestore/mftf:2.3.0-apache-php7.1.25
     volumes:
-      - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
+      # - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
+      - ../bin/apache-entrypoint:/usr/local/bin/entrypoint
     ports:
       - 8080-8089:80
       - 8180-8189:443
@@ -11,15 +12,24 @@ services:
       webnet:
         aliases:
           - localhost.com
+    environment:
+      BASE_URL: http://localhost/
+      MAGENTO_DEV_MODE: developer
+    mem_limit: 3GB
+    memswap_limit: 0
+    entrypoint:
+      - entrypoint
 
   db:
-    image: magestore/mftf-db:percona-5.7
+    image: magestore/mftf-db:percona-5.7-lessdata
     environment:
       MYSQL_ROOT_PASSWORD: magento
     volumes:
       - ./../db/conf.d:/etc/my.cnf.d
     networks:
       - webnet
+    mem_limit: 3GB
+    memswap_limit: 0
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

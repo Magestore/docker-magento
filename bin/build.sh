@@ -206,6 +206,15 @@ fi
 #     done
 # fi
 
+# Upgrade module (if needed)
+# install POS
+echo "Install POS modules:"
+sed -i 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
+docker-compose up -d magento
+
+echo "Wait for mysql work"
+COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php
+
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
@@ -214,32 +223,6 @@ docker-compose exec -u www-data -T magento bash -c \
     "php bin/magento setup:store-config:set \
     --admin-use-security-key=0 \
     --base-url=$MAGENTO_URL/ "
-
-# Upgrade module (if needed)
-# install POS
-echo "Install POS modules:"
-sed -i 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
-docker-compose up -d magento
-
-# Wait for server
-sleep 5
-COUNT_LIMIT=10 # timeout 600 seconds
-while ! RESPONSE=`docker-compose exec -T magento curl -s localhost/magento_version`
-do
-    if [ $COUNT_LIMIT -lt 1 ]; then
-        echo "Server magento doesn't work"
-        sleep 1000 # debuging
-        exit 1
-    fi
-    COUNT_LIMIT=$(( COUNT_LIMIT - 1 ))
-    sleep 3
-done
-
-
-sleep 100000
-
-echo "Wait for mysql work"
-COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php
 
 docker-compose exec -u www-data -T magento bash -c "php bin/magento setup:upgrade"
 docker-compose exec -u www-data -T magento bash -c "php bin/magento webpos:deploy"

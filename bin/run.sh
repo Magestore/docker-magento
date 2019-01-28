@@ -15,7 +15,7 @@ if [[ -z "$PORT" ]]; then
 fi
 
 MAGENTO_URL="http://$NODE_IP:$PORT"
-MAGENTO_SECURE_URL="http://$NODE_IP:$PORT"
+MAGENTO_SECURE_URL="https://$NODE_IP:$PORT"
 
 PORT=`docker-compose port --protocol=tcp phpmyadmin 80 | sed 's/0.0.0.0://'`
 PHPMYADMIN_URL="http://$NODE_IP:$PORT"

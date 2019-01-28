@@ -51,7 +51,7 @@ INFO="${INFO}PHPMyAdmin: $PHPMYADMIN_URL \n"
 INFO="${INFO}MAIL BOX: $EMAIL_URL \n"
 INFO="${INFO}"
 
-curl -X POST -s --data-urlencode "payload={\"text\": \"[RUNNING] <$RUN_DISPLAY_URL|$BUILD_DISPLAY_NAME> $INFO \"}" $SLACK_HOOKS_POS4
+curl -X POST -s --data-urlencode "payload={\"text\": \"[RUNNING] <$RUN_DISPLAY_URL|$BUILD_DISPLAY_NAME> $INFO \"}" ${SLACK_HOOKS_POS4:-localhost}
 
 # Living time
 set -x

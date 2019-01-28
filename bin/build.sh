@@ -120,7 +120,7 @@ echo "Install POS modules:"
 #sed -i 's/#AUTO_ADD_VOLUME_server_app_code_Magestore/- \.\/server\/app\/code\/Magestore:\/var\/www\/html\/app\/code\/Magestore/g' docker-compose.yml
 #docker-compose up -d magento
 CONTAINER_ID=`docker-compose ps -q magento`
-docker cp ./server/app/code/Magestore $CONTAINER_ID:/var/www/html/app/code/
+docker cp ./server/app/code/Magestore $CONTAINER_ID:/var/www/html/app/code/Magestore
 
 echo "Wait for mysql work"
 COMPOSE_HTTP_TIMEOUT=200 docker-compose exec -T magento php mysql.php

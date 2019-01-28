@@ -42,11 +42,11 @@ fi
 
 # Build POS
 cd client/pos
-#npm install && npm run build
+npm install && npm run build
 cd ../..
-#mkdir -p server/app/code/Magestore/Webpos/build/apps
-#rm -Rf server/app/code/Magestore/Webpos/build/apps/pos
-#cp -Rf client/pos/build server/app/code/Magestore/Webpos/build/apps/pos
+mkdir -p server/app/code/Magestore/Webpos/build/apps
+rm -Rf server/app/code/Magestore/Webpos/build/apps/pos
+cp -Rf client/pos/build server/app/code/Magestore/Webpos/build/apps/pos
 
 # Start service
 cp ../$COMPOSE_FILE docker-compose.yml

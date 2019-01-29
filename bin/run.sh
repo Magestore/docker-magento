@@ -13,9 +13,13 @@ if [[ -z "$PORT" ]]; then
     echo "Server is not running..."
     exit 1
 fi
+PORTS=`docker-compose port --protocol=tcp magento 443 | sed 's/0.0.0.0://'`
+if [[ -z "$PORTS" ]]; then
+    echo "Port 443 is not open or server is not running..."
+fi
 
 MAGENTO_URL="http://$NODE_IP:$PORT"
-MAGENTO_SECURE_URL="https://$NODE_IP:$PORT"
+MAGENTO_SECURE_URL="https://$NODE_IP:$PORTS"
 
 PORT=`docker-compose port --protocol=tcp phpmyadmin 80 | sed 's/0.0.0.0://'`
 PHPMYADMIN_URL="http://$NODE_IP:$PORT"
@@ -29,9 +33,9 @@ echo "Server Info: $HTTP_SERVER php-$PHP_VERSION Magento-$MAGENTO_VERSION"
 echo "Built from: $GITHUB_REPO $GITHUB_BRANCH"
 echo ""
 echo "Magento: $MAGENTO_URL/admin"
-echo "         $MAGENTO_SECURE_URL/admin"
+[ -z "$PORTS" ] || echo "         $MAGENTO_SECURE_URL/admin"
 echo "POS:     $MAGENTO_URL/pub/apps/pos/"
-echo "         $MAGENTO_SECURE_URL/pub/apps/pos/"
+[ -z "$PORTS" ] || echo "         $MAGENTO_SECURE_URL/pub/apps/pos/"
 echo "Admin: admin/admin123"
 echo "PHPMyAdmin: $PHPMYADMIN_URL"
 echo "MAIL BOX: $EMAIL_URL"
@@ -43,9 +47,9 @@ INFO="${INFO}Server Info: $HTTP_SERVER php-$PHP_VERSION Magento-$MAGENTO_VERSION
 INFO="${INFO}Built from: $GITHUB_REPO $GITHUB_BRANCH \n"
 INFO="${INFO}\n"
 INFO="${INFO}Magento: $MAGENTO_URL/admin \n"
-INFO="${INFO}         $MAGENTO_SECURE_URL/admin \n"
+[ -z "$PORTS" ] || INFO="${INFO}         $MAGENTO_SECURE_URL/admin \n"
 INFO="${INFO}POS:     $MAGENTO_URL/pub/apps/pos/ \n"
-INFO="${INFO}         $MAGENTO_SECURE_URL/pub/apps/pos/ \n"
+[ -z "$PORTS" ] || INFO="${INFO}         $MAGENTO_SECURE_URL/pub/apps/pos/ \n"
 INFO="${INFO}Admin: admin/admin123 \n"
 INFO="${INFO}PHPMyAdmin: $PHPMYADMIN_URL \n"
 INFO="${INFO}MAIL BOX: $EMAIL_URL \n"

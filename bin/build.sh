@@ -138,6 +138,7 @@ docker-compose exec -u www-data -T magento bash -c \
 
 docker-compose exec -u www-data -T magento bash -c "php bin/magento setup:upgrade"
 docker-compose exec -u www-data -T magento bash -c "php bin/magento webpos:deploy"
+docker-compose exec -u www-data -T magento bash -c "php bin/magento indexer:reindex"
 
 # Update config for testing
 MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled ; \

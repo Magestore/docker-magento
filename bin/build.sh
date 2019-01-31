@@ -145,3 +145,6 @@ MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled ; \
 php bin/magento config:set admin/security/admin_account_sharing 1 ; \
 php bin/magento config:set admin/captcha/enable 0 '
 docker-compose exec -u www-data -T magento bash -c "$MAGENTO_CMD"
+
+# clear magento cache
+docker-compose exec -u www-data -T magento bash -c "php bin/magento cache:clean"

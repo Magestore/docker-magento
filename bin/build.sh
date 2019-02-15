@@ -139,7 +139,7 @@ docker-compose exec -u www-data -T magento bash -c \
 docker-compose exec -u www-data -T magento bash -c "php bin/magento setup:upgrade"
 docker-compose exec -u www-data -T magento bash -c "php bin/magento webpos:deploy"
 docker-compose exec -u www-data -T magento bash -c "php bin/magento indexer:reindex"
-
+docker-compose exec -u www-data -T magento bash -c "composer require zendframework/zend-barcode"
 # Update config for testing
 MAGENTO_CMD='php bin/magento config:set cms/wysiwyg/enabled disabled ; \
 php bin/magento config:set admin/security/admin_account_sharing 1 ; \

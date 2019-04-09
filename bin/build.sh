@@ -71,6 +71,11 @@ docker-compose exec -u www-data -T magento bash -c \
     stripe/stripe-php:* \
     zendframework/zend-barcode;"
 
+if [ $? -ne 0 ]; then
+    echo 'Image server is not existed!'
+    exit 1
+fi
+
 # Check magento installation
 COUNT_LIMIT=120 # timeout 600 seconds
 while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`

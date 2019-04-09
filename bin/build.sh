@@ -41,7 +41,7 @@ fi
 
 # Build POS
 cd client/pos
-npm install && npm run build
+yarn install && yarn run build
 cd ../..
 mkdir -p server/app/code/Magestore/Webpos/build/apps
 rm -Rf server/app/code/Magestore/Webpos/build/apps/pos

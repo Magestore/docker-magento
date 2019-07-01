@@ -1,7 +1,7 @@
 version: '3'
 services:
   magento:
-    image: vmagestore/mftf:2.3.2
+    image: magestore/mftf:2.3.2
     volumes:
       - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
     ports:

@@ -13,7 +13,7 @@ pipeline {
         choice(name: 'GITHUB_REPO', choices: ['magestore-shark/pos-standard', 'magestore-shark/pos-enterprise', 'magestore-shark/pos-pro', 'Magestore/pos-standard', 'Magestore/pos-pro', 'Magestore/pos-enterprise'], description: 'Github repository')
         string(name: 'GITHUB_BRANCH', defaultValue: '4-develop', description: 'Github branch or pull request. Example: 3-develop, pull/3')
         choice(name: 'TIME_TO_LIVE', choices: ['4h', '1d', '7d'], description: 'Server living time')
-        credentials(name: 'GITHUB_USER', description: 'Github username and password', defaultValue: '3be1a24f-156f-4b94-9175-67392b024bc1', credentialType: "Username with password", required: true)
+        credentials(name: 'GITHUB_USER', description: 'Github username and password', defaultValue: 'c005e544-9ad8-48be-ba44-a0f6d519a2ec', credentialType: "Username with password", required: true)
     }
     environment {
         CI = 'true'

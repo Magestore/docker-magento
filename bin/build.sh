@@ -21,7 +21,7 @@ fi
 
 mkdir $HASH_NAME && cd $HASH_NAME
 
-if [ -z $GITHUB_BRANCH ]; then
+if [[ ! -z "${GITHUB_BRANCH}" ]]; then
     # Build WebPOS and deploy to Magento Server
     GITHUB_URL="https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_REPO"
     IS_PULL=`node -e "if ('$GITHUB_BRANCH'.indexOf('pull/') !== -1) console.log('1');"`
@@ -55,7 +55,7 @@ COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
-if [ -z $GITHUB_BRANCH ]; then
+if [[ ! -z "${GITHUB_BRANCH}" ]]; then
     # Install required module
     docker-compose exec -u www-data -T magento bash -c \
         "echo '{ \

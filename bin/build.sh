@@ -21,32 +21,33 @@ fi
 
 mkdir $HASH_NAME && cd $HASH_NAME
 
-# Build WebPOS and deploy to Magento Server
-GITHUB_URL="https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_REPO"
-IS_PULL=`node -e "if ('$GITHUB_BRANCH'.indexOf('pull/') !== -1) console.log('1');"`
+if [ -z $GITHUB_BRANCH ]; then
+    # Build WebPOS and deploy to Magento Server
+    GITHUB_URL="https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_REPO"
+    IS_PULL=`node -e "if ('$GITHUB_BRANCH'.indexOf('pull/') !== -1) console.log('1');"`
 
-git init && git remote add origin $GITHUB_URL
-if [[ -z "${IS_PULL}" ]]; then
-    echo "Checking out branch $GITHUB_BRANCH..."
-    git fetch --depth 1 origin $GITHUB_BRANCH
-else
-    echo "Checking out pull request $GITHUB_BRANCH..."
-    git fetch --depth 1 origin +refs/$GITHUB_BRANCH/merge
+    git init && git remote add origin $GITHUB_URL
+    if [[ -z "${IS_PULL}" ]]; then
+        echo "Checking out branch $GITHUB_BRANCH..."
+        git fetch --depth 1 origin $GITHUB_BRANCH
+    else
+        echo "Checking out pull request $GITHUB_BRANCH..."
+        git fetch --depth 1 origin +refs/$GITHUB_BRANCH/merge
+    fi
+    git checkout FETCH_HEAD
+
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+
+    # Build POS
+    cd client/pos
+    yarn install && yarn run build
+    cd ../..
+    mkdir -p server/app/code/Magestore/Webpos/build/apps
+    rm -Rf server/app/code/Magestore/Webpos/build/apps/pos
+    cp -Rf client/pos/build server/app/code/Magestore/Webpos/build/apps/pos
 fi
-git checkout FETCH_HEAD
-
-if [ $? -ne 0 ]; then
-    exit 1
-fi
-
-# Build POS
-cd client/pos
-yarn install && yarn run build
-cd ../..
-mkdir -p server/app/code/Magestore/Webpos/build/apps
-rm -Rf server/app/code/Magestore/Webpos/build/apps/pos
-cp -Rf client/pos/build server/app/code/Magestore/Webpos/build/apps/pos
-
 # Start service
 cp ../$COMPOSE_FILE docker-compose.yml
 COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
@@ -54,22 +55,24 @@ COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
-# Install required module
-docker-compose exec -u www-data -T magento bash -c \
-    "echo '{ \
-        \"http-basic\": { \
-            \"repo.magento.com\": { \
-                \"username\": \"a3380186b4ffb670466a01331a3fb375\", \
-                \"password\": \"cfe4874a50552827da901971d249322a\" \
+if [ -z $GITHUB_BRANCH ]; then
+    # Install required module
+    docker-compose exec -u www-data -T magento bash -c \
+        "echo '{ \
+            \"http-basic\": { \
+                \"repo.magento.com\": { \
+                    \"username\": \"a3380186b4ffb670466a01331a3fb375\", \
+                    \"password\": \"cfe4874a50552827da901971d249322a\" \
+                } \
             } \
-        } \
-    }' > auth.json ; \
-    php vendor/composer/composer/bin/composer require \
-    authorizenet/authorizenet \
-    paypal/rest-api-sdk-php:* \
-    paypal/merchant-sdk-php:* \
-    stripe/stripe-php:* \
-    zendframework/zend-barcode;"
+        }' > auth.json ; \
+        php vendor/composer/composer/bin/composer require \
+        authorizenet/authorizenet \
+        paypal/rest-api-sdk-php:* \
+        paypal/merchant-sdk-php:* \
+        stripe/stripe-php:* \
+        zendframework/zend-barcode;"
+fi
 
 if [ $? -ne 0 ]; then
     echo 'Image server is not existed!'

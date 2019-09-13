@@ -47,6 +47,16 @@ if [[ ! -z "${GITHUB_BRANCH}" ]]; then
     mkdir -p server/app/code/Magestore/Webpos/build/apps
     rm -Rf server/app/code/Magestore/Webpos/build/apps/pos
     cp -Rf client/pos/build server/app/code/Magestore/Webpos/build/apps/pos
+
+    if [ -d "client/BI" ]; then
+        # Build BI
+        cd client/BI
+        yarn install && yarn run build
+        cd ../..
+        mkdir -p server/app/code/Magestore/BIIndexer/build/apps
+        rm -Rf server/app/code/Magestore/BIIndexer/build/apps/bi
+        cp -Rf client/BI/build server/app/code/Magestore/BIIndexer/build/apps/bi
+    fi
 fi
 # Start service
 cp ../$COMPOSE_FILE docker-compose.yml

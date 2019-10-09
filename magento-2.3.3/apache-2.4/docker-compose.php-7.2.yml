@@ -1,7 +1,7 @@
 version: '3'
 services:
   magento:
-    image: magestore/mftf:2.3.2
+    image: vinhnv95/mftf:2.3.3-apache-php7.2
     volumes:
       - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
     ports:
@@ -15,7 +15,7 @@ services:
           - localhost.com
 
   db:
-    image: magestore/mftf-db:2.3.2
+    image: vinhnv95/mftf-db:2.3.3-percona
     environment:
       MYSQL_ROOT_PASSWORD: magento
     volumes:

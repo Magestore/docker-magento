@@ -10,7 +10,7 @@ pipeline {
         choice(name: 'HTTP_SERVER', choices: ['apache-2.4', 'nginx-1.8', 'apache-2.2'], description: 'HTTP Server')
         choice(name: 'PHP_VERSION', choices: ['7.2', '7.1', '7.0', '5.6'], description: 'PHP Version')
         choice(name: 'MAGENTO_VERSION', choices: ['ee-2.3.3', '2.3.3', '2.3.2', '2.3.1', '2.3.0', '2.2.10', '2.2.9', '2.2.8', '2.2.7', '2.2.6', '2.1.17', '2.1.16'], description: 'Magento Version')
-        choice(name: 'GITHUB_REPO', choices: ['magestore-shark/pos-standard', 'magestore-shark/pos-enterprise', 'magestore-shark/pos-pro', 'Magestore/pos-standard', 'Magestore/pos-pro', 'Magestore/pos-enterprise'], description: 'Github repository')
+        choice(name: 'GITHUB_REPO', choices: ['magestore-shark/pos-standard', 'magestore-shark/pos-enterprise', 'magestore-shark/pos-pro', 'abel274/pos-enterprise-commerce', 'Magestore/pos-standard', 'Magestore/pos-pro', 'Magestore/pos-enterprise', 'Magestore/pos-enterprise-commerce'], description: 'Github repository')
         string(name: 'GITHUB_BRANCH', defaultValue: '4-develop', description: 'Github branch or pull request. Example: 3-develop, pull/3')
         choice(name: 'TIME_TO_LIVE', choices: ['4h', '1d', '7d'], description: 'Server living time')
         credentials(name: 'GITHUB_USER', description: 'Github username and password', defaultValue: 'c005e544-9ad8-48be-ba44-a0f6d519a2ec', credentialType: "Username with password", required: true)

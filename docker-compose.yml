@@ -1,0 +1,47 @@
+version: '3'
+services:
+  magento:
+    image: vinhnv95/mftf:2.3.3-apache-php7.2
+    volumes:
+      - ./server:/var/www/html/server
+      - ./server/app/tests/static/Webpos/phpunit.xml:/var/www/html/dev/tests/static/phpunit.xml
+      - ./server/app/tests/static/Webpos/changed_files.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/_files/changed_files.txt
+      - ./server/app/tests/static/Webpos/changed_files.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Less/_files/changed_files.txt
+      - ./server/app/tests/static/Webpos/changed_files.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Html/_files/changed_files.txt
+      - ./server/app/tests/static/testsuite/Magento/Test/Less/_files/blacklist:/var/www/html/dev/tests/static/testsuite/Magento/Test/Less/_files/blacklist
+      - ./common.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Php/_files/whitelist/common.txt
+      - ./common.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Less/_files/whitelist/common.txt
+      - ./common.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Html/_files/whitelist/common.txt
+    environment:
+      BASE_URL: https://localhost.com/
+      MAGENTO_DEV_MODE: developer
+    networks:
+      webnet:
+        aliases:
+          - localhost.com
+
+  db:
+    image: vinhnv95/mftf-db:2.3.3-percona
+    environment:
+      MYSQL_ROOT_PASSWORD: magento
+    volumes:
+      - ./db/conf.d:/etc/my.cnf.d
+    networks:
+      - webnet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: magento
+    networks:
+      - webnet
+
+  mailhog:
+    image: mailhog/mailhog
+    networks:
+      - webnet
+
+networks:
+  webnet:

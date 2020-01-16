@@ -29,19 +29,5 @@ services:
     networks:
       - webnet
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: magento
-    networks:
-      - webnet
-
-  mailhog:
-    image: mailhog/mailhog
-    networks:
-      - webnet
-
 networks:
   webnet:

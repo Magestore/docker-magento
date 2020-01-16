@@ -24,4 +24,8 @@ Run static test:
 docker-compose exec -u www-data magento php bin/magento dev:test:run static -c'--testsuite=PWAPOS'
 ```
 
+If you want to stop this docker, run below command:
 
+```bash
+docker-compose stop
+```

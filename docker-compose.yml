@@ -12,7 +12,6 @@ services:
       - ./common.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Php/_files/whitelist/common.txt
       - ./common.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Less/_files/whitelist/common.txt
       - ./common.txt:/var/www/html/dev/tests/static/testsuite/Magento/Test/Html/_files/whitelist/common.txt
-      - ./report:/var/www/html/dev/tests/static/report
     environment:
       BASE_URL: https://localhost.com/
       MAGENTO_DEV_MODE: developer

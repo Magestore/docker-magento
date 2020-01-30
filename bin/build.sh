@@ -91,7 +91,7 @@ fi
 
 # Check magento installation
 COUNT_LIMIT=120 # timeout 600 seconds
-while ! RESPONSE=`docker-compose exec -T phpmyadmin curl -s https://localhost.com/magento_version`
+while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
 do
     if [ $COUNT_LIMIT -lt 1 ]; then
         break
@@ -104,7 +104,7 @@ if [[ ${RESPONSE:0:8} != "Magento/" ]]; then
     docker-compose restart magento
     PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
     MAGENTO_URL="http://$NODE_IP:$PORT"
-    while ! RESPONSE=`docker-compose exec -T phpmyadmin curl -s https://localhost.com/magento_version`
+    while ! RESPONSE=`docker-compose exec -T magento curl -s https://localhost.com/magento_version`
     do
         sleep 5
     done

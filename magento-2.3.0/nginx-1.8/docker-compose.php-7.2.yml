@@ -11,6 +11,18 @@ services:
         aliases:
           - localhost.com
 
+  functional:
+    image: magestore/mftf:2.2.4
+    environment:
+      BASE_URL: https://localhost2.com/
+      MAGENTO_DEV_MODE: developer
+    networks:
+      webnet:
+        aliases:
+          - localhost2.com
+    entrypoint:
+      - apache2-foreground
+
   db:
     image: magestore/mftf-db:percona-5.7
     environment:

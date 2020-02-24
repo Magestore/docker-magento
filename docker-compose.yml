@@ -1,7 +1,7 @@
 version: '3'
 services:
   magento:
-    image: magestore/mftf:2.2.10-apache-php7.1
+    image: magestore/mftf:2.2.11-apache-php7.1
     volumes:
       - ./server:/var/www/html/server
       - ./server/app/tests/static/Webpos/phpunit.xml:/var/www/html/dev/tests/static/phpunit.xml
@@ -21,7 +21,7 @@ services:
           - localhost.com
 
   db:
-    image: magestore/mftf-db:2.2.10-percona
+    image: magestore/mftf-db:2.2.11-percona
     environment:
       MYSQL_ROOT_PASSWORD: magento
     volumes:

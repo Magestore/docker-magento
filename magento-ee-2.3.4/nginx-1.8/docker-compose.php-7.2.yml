@@ -1,0 +1,57 @@
+version: '3'
+services:
+  magento:
+    image: 192.168.130.18:5000/mftf:ee-2.3.4-nginx-php7.2.13
+    volumes:
+      - ./server/app/code/Magestore:/var/www/html/app/code/Magestore
+    ports:
+      - 8080-8089:80
+    environment:
+      BASE_URL: https://localhost.com/
+      MAGENTO_DEV_MODE: developer
+    networks:
+      webnet:
+        aliases:
+          - localhost.com
+
+  functional:
+    image: magestore/mftf:2.2.4
+    environment:
+      BASE_URL: https://localhost2.com/
+      MAGENTO_DEV_MODE: developer
+    networks:
+      webnet:
+        aliases:
+          - localhost2.com
+    entrypoint:
+      - apache2-foreground
+
+  db:
+    image: 192.168.130.18:5000/mftf-db:ee-2.3.4-percona
+    environment:
+      MYSQL_ROOT_PASSWORD: magento
+    volumes:
+      - ../db/conf.d:/etc/my.cnf.d
+    networks:
+      - webnet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8060-8069:80
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: magento
+    networks:
+      - webnet
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8020-8029:8025
+    networks:
+      - webnet
+
+networks:
+  webnet:

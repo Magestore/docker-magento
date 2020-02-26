@@ -40,6 +40,9 @@ if [[ ! -z "${GITHUB_BRANCH}" ]]; then
         exit 1
     fi
 
+    # Add sample data modules for test
+    cp -Rf server/app/tests/Magestore/* server/app/code/Magestore/
+
     # Build POS
     cd client/pos
     yarn install && yarn run build

@@ -68,7 +68,7 @@ COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
-if [[ ! -z "${GITHUB_BRANCH}" ]]; then
+#if [[ ! -z "${GITHUB_BRANCH}" ]]; then
     # Install required module
 #    docker-compose exec -u www-data -T magento bash -c \
 #        "echo '{ \
@@ -85,7 +85,7 @@ if [[ ! -z "${GITHUB_BRANCH}" ]]; then
 #        paypal/merchant-sdk-php:* \
 #        stripe/stripe-php:* \
 #        zendframework/zend-barcode;"
-fi
+#fi
 
 if [ $? -ne 0 ]; then
     echo 'Image server is not existed!'

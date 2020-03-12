@@ -68,24 +68,24 @@ COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 MAGENTO_URL="http://$NODE_IP:$PORT"
 
-#if [[ ! -z "${GITHUB_BRANCH}" ]]; then
-    # Install required module
-#    docker-compose exec -u www-data -T magento bash -c \
-#        "echo '{ \
-#            \"http-basic\": { \
-#                \"repo.magento.com\": { \
-#                    \"username\": \"a3380186b4ffb670466a01331a3fb375\", \
-#                    \"password\": \"cfe4874a50552827da901971d249322a\" \
-#                } \
-#            } \
-#        }' > auth.json ; \
-#        php vendor/composer/composer/bin/composer require \
-#        authorizenet/authorizenet \
-#        paypal/rest-api-sdk-php:* \
-#        paypal/merchant-sdk-php:* \
-#        stripe/stripe-php:* \
-#        zendframework/zend-barcode;"
-#fi
+if [[ ! -z "${GITHUB_BRANCH}" ]]; then
+     Install required module
+    docker-compose exec -u www-data -T magento bash -c \
+        "echo '{ \
+            \"http-basic\": { \
+                \"repo.magento.com\": { \
+                    \"username\": \"a3380186b4ffb670466a01331a3fb375\", \
+                    \"password\": \"cfe4874a50552827da901971d249322a\" \
+                } \
+            } \
+        }' > auth.json ; \
+        php vendor/composer/composer/bin/composer require \
+        authorizenet/authorizenet \
+        paypal/rest-api-sdk-php:* \
+        paypal/merchant-sdk-php:* \
+        stripe/stripe-php:* \
+        zendframework/zend-barcode;"
+fi
 
 if [ $? -ne 0 ]; then
     echo 'Image server is not existed!'

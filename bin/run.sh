@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+echo "Running on node $NODE_NAME"
+
 if [[ ! -z "${JENKINS_DATA}" ]]; then
     cd $JENKINS_DATA/workspace/$JOB_BASE_NAME
 fi

@@ -6,7 +6,7 @@ if [[ ! -z "${JENKINS_DATA}" ]]; then
     cd $JENKINS_DATA/workspace/$JOB_BASE_NAME
 fi
 
-HASH_NAME=`echo -n "$HTTP_SERVER-$PHP_VERSION-$MAGENTO_VERSION-$GITHUB_REPO-$GITHUB_BRANCH" | sha1sum | cut -d' ' -f 1`
+HASH_NAME=`echo -n "$HTTP_SERVER-$PHP_VERSION-$MAGENTO_VERSION-$GITHUB_REPO-$GITHUB_BRANCH-$BUILD_NUMBER" | sha1sum | cut -d' ' -f 1`
 cd $HASH_NAME
 
 PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`

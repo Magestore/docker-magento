@@ -14,7 +14,7 @@ if [ ! -f "$COMPOSE_FILE" ]; then
     exit 1
 fi
 
-HASH_NAME=`echo -n "$HTTP_SERVER-$PHP_VERSION-$MAGENTO_VERSION-$GITHUB_REPO-$GITHUB_BRANCH" | sha1sum | cut -d' ' -f 1`
+HASH_NAME=`echo -n "$HTTP_SERVER-$PHP_VERSION-$MAGENTO_VERSION-$GITHUB_REPO-$GITHUB_BRANCH-$BUILD_NUMBER" | sha1sum | cut -d' ' -f 1`
 
 if [ -d "$HASH_NAME" ]; then
     echo 'Server is running...'

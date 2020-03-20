@@ -105,7 +105,7 @@ do
     sleep 5
 done
 
-if [[ -z $RESPONSE || ${RESPONSE:0:8} != "Magento/" ]]; then
+if [[ -z "${RESPONSE}" || ${RESPONSE:0:8} != "Magento/" ]]; then
 #    docker-compose restart magento
 #    PORT=`docker-compose port --protocol=tcp magento 80 | sed 's/0.0.0.0://'`
 #    MAGENTO_URL="http://$NODE_IP:$PORT"

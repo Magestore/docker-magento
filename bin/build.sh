@@ -43,7 +43,7 @@ if [[ ! -z "${GITHUB_BRANCH}" ]]; then
     fi
 
     # Add sample data modules for test
-    cp -Rf server/app/tests/Magestore/* server/app/code/Magestore/
+#    cp -Rf server/app/tests/Magestore/* server/app/code/Magestore/
 
     # Build POS
     cd client/pos

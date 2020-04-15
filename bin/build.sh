@@ -117,10 +117,6 @@ if [[ -z "${RESPONSE}" || ${RESPONSE:0:8} != "Magento/" ]]; then
     exit 1
 fi
 
-# Add sample data modules for test but disable it for using later if needed
-cp -Rf server/app/tests/Magestore/* server/app/code/Magestore/
-docker-compose exec -u www-data -T magento bash -c "php bin/magento module:disable Magestore_PosSampleData"
-
 # Correct magento url
 docker-compose exec -u www-data -T magento bash -c \
     "php bin/magento setup:store-config:set \

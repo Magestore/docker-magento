@@ -48,6 +48,9 @@ if [[ ! -z "${GITHUB_BRANCH}" ]]; then
     # Build POS
     cd client/pos
     yarn install && yarn run build
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
     cd ../..
     mkdir -p server/app/code/Magestore/Webpos/build/apps
     rm -Rf server/app/code/Magestore/Webpos/build/apps/pos
@@ -57,6 +60,9 @@ if [[ ! -z "${GITHUB_BRANCH}" ]]; then
         # Build BI
         cd client/BI
         yarn install && yarn run build
+        if [ $? -ne 0 ]; then
+            exit 1
+        fi
         cd ../..
         mkdir -p server/app/code/Magestore/BIIndexer/build/apps
         rm -Rf server/app/code/Magestore/BIIndexer/build/apps/bi
